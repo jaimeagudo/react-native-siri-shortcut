@@ -22,6 +22,7 @@ enum VoiceShortcutMutationStatus: String {
 class ShortcutsModule: RCTEventEmitter, INUIAddVoiceShortcutViewControllerDelegate, INUIEditVoiceShortcutViewControllerDelegate {
     var hasListeners: Bool = false
 
+    var persistentIdentifier: String?
     var presenterViewController: UIViewController?
     var voiceShortcuts: Array<NSObject> = [] // Actually it's INVoiceShortcut, but that way we would have to break compatibility with simple NSUserActivity behaviour
     var presentShortcutCallback: RCTResponseSenderBlock?
@@ -175,6 +176,7 @@ class ShortcutsModule: RCTEventEmitter, INUIAddVoiceShortcutViewControllerDelega
     @available(iOS 12.0, *)
     @objc func presentShortcut(_ jsonOptions: Dictionary<String, Any>, callback: @escaping RCTResponseSenderBlock) {
         presentShortcutCallback = callback
+        persistentIdentifier = jsonOptions["persistentIdentifier"] as? String
         let activity = ShortcutsModule.generateUserActivity(jsonOptions)
         
         let shortcut = INShortcut(userActivity: activity)
@@ -204,11 +206,10 @@ class ShortcutsModule: RCTEventEmitter, INUIAddVoiceShortcutViewControllerDelega
     }
     
     func dismissPresenter(_ status: VoiceShortcutMutationStatus) {
+
         presenterViewController?.dismiss(animated: true, completion: nil)
         presenterViewController = nil
-        presentShortcutCallback?([
-            ["status": status.rawValue]
-            ])
+        presentShortcutCallback?([["status": status.rawValue , "id": persistentIdentifier]])
         presentShortcutCallback = nil
     }
     
