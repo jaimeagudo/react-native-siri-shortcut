@@ -127,12 +127,8 @@ class ShortcutsModule: RCTEventEmitter, INUIAddVoiceShortcutViewControllerDelega
     
     @available(iOS 9.0, *)
     @objc func donateShortcut(_ jsonOptions: Dictionary<String, Any>) {
-        let activity = ShortcutsModule.generateUserActivity(jsonOptions)
-        DispatchQueue.main.async {
-            UIApplication.shared.keyWindow!.rootViewController!.userActivity = activity
-        }
-        activity.becomeCurrent()
-        print("Just created shortcut")
+        //https://developer.apple.com/documentation/sirikit/donating_shortcuts
+        ShortcutsModule.generateUserActivity(jsonOptions).becomeCurrent()
     }
     
     @available(iOS 12.0, *)
@@ -144,7 +140,6 @@ class ShortcutsModule: RCTEventEmitter, INUIAddVoiceShortcutViewControllerDelega
         
         // Suggest the shortcuts.
         INVoiceShortcutCenter.shared.setShortcutSuggestions(suggestions)
-        print("Created suggested shortcuts")
     }
     
     @objc func clearAllShortcuts(_ resolve: @escaping RCTPromiseResolveBlock,
