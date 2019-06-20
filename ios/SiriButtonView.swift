@@ -3,6 +3,7 @@
 //  RNSiriShortcuts
 //
 //  Created by Gustavo Parreira on 23/10/2018.
+//  Modified by Jaime Agudo on 20/06/2019
 //  Copyright © 2018 Facebook. All rights reserved.
 //
 
@@ -14,32 +15,61 @@ import UIKit
 @available(iOS 12.0, *)
 @objc(SiriButtonView)
 public class SiriButtonView : UIView {
-    var style: INUIAddVoiceShortcutButtonStyle = .white
+    var defaultStyle: INUIAddVoiceShortcutButtonStyle = .white
     var button: INUIAddVoiceShortcutButton
     var onPress: RCTBubblingEventBlock?
+    let slate =  UIColor(red: 51.0/255, green: 73.0/255, blue: 91.0/255, alpha:1)
+    var isCentered: Bool = false;
     
     override init(frame: CGRect) {
-        button = INUIAddVoiceShortcutButton(style: style)
+        button = INUIAddVoiceShortcutButton(style: defaultStyle)
         
         super.init(frame: frame)
-        setupButton()
+        setupButton(style: defaultStyle)
     }
     
     func setupButton(style: INUIAddVoiceShortcutButtonStyle? = nil, shortcut: INShortcut? = nil) {
         // Remove from container before re-declaring
         button.removeFromSuperview()
+        // Set from the predefined styles
         
-        // TODO: Initialize with passed in styling
-        self.style = style ?? self.style
-        button = INUIAddVoiceShortcutButton(style: self.style)
-        // Remove constraints so that the button renders with the default size Apple intended
-        button.translatesAutoresizingMaskIntoConstraints = false
-        // Wire up with the JS onPress
+        //'blackOutline' meaning redefined to be black&centered to save a 'isCentered' parameter; outline style are unused
+        if(style == .blackOutline){
+            isCentered = true
+            button = INUIAddVoiceShortcutButton(style: .black)
+            // Remove constraints so that the button renders with the default size Apple intended
+            button.translatesAutoresizingMaskIntoConstraints = false
+        } else {
+            button = INUIAddVoiceShortcutButton(style: style ?? defaultStyle)
+        }
+        
+        // Wire up with the JS onTap
         button.addTarget(self, action: #selector(SiriButtonView.onClick), for: .touchUpInside)
         // Add the shortcut, if provided
         button.shortcut = shortcut
         
-        // Add new button to subview
+        //Tweak native button style to match RN style
+        for subview in button.subviews {
+            if !self.isCentered, let image = subview as? UIImageView{
+                image.heightAnchor.constraint(equalTo: button.heightAnchor, multiplier: 0.6).isActive = true
+                image.widthAnchor.constraint(equalTo: button.heightAnchor, multiplier: 0.6).isActive = true
+                image.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 12.0).isActive = true
+            }
+            if let label = subview as? UILabel, let text = label.text {
+                if text.contains("Siri") {
+                    label.font = UIFont(name: "bariol-medium", size: 18)
+                    if style == .white {
+                        label.textColor = slate
+                    }
+                }else {
+                    label.font = UIFont(name: "bariol-medium", size: 13)
+                }
+                if !self.isCentered{
+                    label.adjustsFontSizeToFitWidth = false
+                    label.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 64.0).isActive = true
+                }
+            }
+        }
         self.addSubview(button)
     }
     
