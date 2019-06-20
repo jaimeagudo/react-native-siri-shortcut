@@ -15,7 +15,7 @@ import UIKit
 @available(iOS 12.0, *)
 @objc(SiriButtonView)
 public class SiriButtonView : UIView {
-    var defaultStyle: INUIAddVoiceShortcutButtonStyle = .white
+    var defaultStyle: INUIAddVoiceShortcutButtonStyle = .blackOutline
     var button: INUIAddVoiceShortcutButton
     var onPress: RCTBubblingEventBlock?
     let slate =  UIColor(red: 51.0/255, green: 73.0/255, blue: 91.0/255, alpha:1)
@@ -98,10 +98,14 @@ public class SiriButtonView : UIView {
     // Add the button as a subview
     public override func layoutSubviews() {
         super.layoutSubviews()
-        
-        // Center button in view
-        self.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
-        self.centerYAnchor.constraint(equalTo: button.centerYAnchor).isActive = true
+        if(isCentered){
+            // Center button in view
+            self.centerXAnchor.constraint(equalTo: button.centerXAnchor).isActive = true
+            self.centerYAnchor.constraint(equalTo: button.centerYAnchor).isActive = true
+        }else {
+            // Make the button to take all available space
+            button.frame = self.bounds
+        }
     }
     
     @objc func onClick() {
