@@ -24,11 +24,11 @@
   "readmeFilename": "README.md",
   "peerDependencies": {
     "react": "16.2.0",
-    "react-native": "^0.52.0",
+    "react-native": "^0.87.1",
     "react-native-swift": "^1.2.1"
   },
   "devDependencies": {
     "react": "16.2.0",
-    "react-native": "^0.52.0"
+    "react-native": "^0.87.1"
   }
 }
